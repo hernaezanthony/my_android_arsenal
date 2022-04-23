@@ -1,15 +1,10 @@
-# Common Recyclerview
+# Room Persistence
 
 ### Description
 
-This is a sample Android application that demonstrates common features of recyclerview such as:
-
-- Display list
-- Search/Filter list
-- Swipe to delete item
-- Swipe/Pull to refresh list
+This is a sample Android application that demonstrates usage of Room Persistence Library as local database
 
 ### Acknowledgements
 
-- https://johncodeos.com/how-to-add-search-in-recyclerview-using-kotlin/
-- https://medium.com/@kitek/recyclerview-swipe-to-delete-easier-than-you-thought-cff67ff5e5f6
+- https://developer.android.com/training/data-storage/room
+- https://www.maskaravivek.com/post/how-to-use-room-persistence-library-in-android-using-kotlin/
