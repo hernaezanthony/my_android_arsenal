@@ -2,13 +2,19 @@ package com.ahernaez.roompersistence.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ahernaez.roompersistence.databinding.ActivityMainBinding
+import com.ahernaez.roompersistence.model.Language
 import com.ahernaez.roompersistence.utils.SwipeToDeleteCallback
+import com.ahernaez.roompersistence.viewmodel.LanguageViewModel
+import com.google.gson.Gson
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,13 +23,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var listAdapter: ListAdapter
     private var list = ArrayList<String>()
 
+    private lateinit var languageViewModel: LanguageViewModel
+    private var languageList = ArrayList<Language>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        addData()
+        languageViewModel = ViewModelProvider(this).get(LanguageViewModel::class.java)
+
         setUpRecyclerView()
         addDividerDecoration()
         setUpSwipeToDelete()
@@ -34,15 +44,42 @@ class MainActivity : AppCompatActivity() {
     private fun addData(){
 
         list.addAll(arrayListOf("C#", "Go","Java", "Javascript", "Kotlin", "Python", "Ruby", "Swift"))
+
+        for (string in list){
+            val newLanguage = Language(0, string)
+            addLanguage(newLanguage)
+        }
+    }
+
+    private fun addLanguage(language: Language){
+
+        languageViewModel.insertLanguage(this, language)
+    }
+
+    private fun getLanguageList(){
+
+        languageViewModel.getLanguageList(this)!!.observe(this, Observer{ langList ->
+
+            if (langList.isEmpty()){
+                addData()
+            }
+
+            languageList.clear()
+            languageList.addAll(langList)
+            listAdapter.notifyDataSetChanged()
+
+        })
     }
 
     private fun setUpRecyclerView(){
 
         layoutManager = LinearLayoutManager(this)
-        listAdapter = ListAdapter(list)
+        listAdapter = ListAdapter(languageList)
 
         binding.recyclerView.layoutManager = layoutManager
         binding.recyclerView.adapter = listAdapter
+
+        getLanguageList()
 
     }
 
@@ -91,7 +128,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             list.clear()
-            addData()
+            getLanguageList()
             listAdapter.notifyDataSetChanged()
             binding.swipeRefreshLayout.isRefreshing = false
         }

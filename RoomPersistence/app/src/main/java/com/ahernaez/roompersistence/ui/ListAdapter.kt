@@ -6,12 +6,13 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.ahernaez.roompersistence.databinding.RowItemBinding
+import com.ahernaez.roompersistence.model.Language
 
-class ListAdapter(private val list : ArrayList<String>) : RecyclerView.Adapter<ListAdapter.ViewHolder>(), Filterable {
+class ListAdapter(private val list : ArrayList<Language>) : RecyclerView.Adapter<ListAdapter.ViewHolder>(), Filterable {
 
     inner class ViewHolder(val binding: RowItemBinding) : RecyclerView.ViewHolder(binding.root)
 
-    var filteredList = ArrayList<String>()
+    var filteredList = ArrayList<Language>()
 
     init {
         filteredList = list
@@ -29,7 +30,7 @@ class ListAdapter(private val list : ArrayList<String>) : RecyclerView.Adapter<L
 
         with(holder){
             with(item){
-                binding.itemTextView.text = this
+                binding.itemTextView.text = this.languageName
             }
         }
     }
@@ -50,10 +51,10 @@ class ListAdapter(private val list : ArrayList<String>) : RecyclerView.Adapter<L
                 }
                 else{
 
-                    val result = ArrayList<String>()
+                    val result = ArrayList<Language>()
 
                     for (string in list){
-                        if (string.lowercase().contains(query.lowercase())){
+                        if (string.languageName.lowercase().contains(query.lowercase())){
                             result.add(string)
                         }
                     }
@@ -70,7 +71,7 @@ class ListAdapter(private val list : ArrayList<String>) : RecyclerView.Adapter<L
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
 
-                filteredList = results?.values as ArrayList<String>
+                filteredList = results?.values as ArrayList<Language>
                 notifyDataSetChanged()
             }
 
