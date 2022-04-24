@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ahernaez.roompersistence.databinding.RowItemBinding
 import com.ahernaez.roompersistence.model.Language
 
-class ListAdapter(private val list : ArrayList<Language>) : RecyclerView.Adapter<ListAdapter.ViewHolder>(), Filterable {
+class ListAdapter(private val list : ArrayList<Language>,private val onEditBtnClickListener: OnEditBtnClickListener) : RecyclerView.Adapter<ListAdapter.ViewHolder>(), Filterable {
 
     inner class ViewHolder(val binding: RowItemBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -31,6 +31,10 @@ class ListAdapter(private val list : ArrayList<Language>) : RecyclerView.Adapter
         with(holder){
             with(item){
                 binding.itemTextView.text = this.languageName
+
+                binding.editBtn.setOnClickListener {
+                    onEditBtnClickListener.onEditBtnClicked(this)
+                }
             }
         }
     }
@@ -78,5 +82,8 @@ class ListAdapter(private val list : ArrayList<Language>) : RecyclerView.Adapter
         }
     }
 
+    interface OnEditBtnClickListener{
+        fun onEditBtnClicked(language: Language)
+    }
 
 }

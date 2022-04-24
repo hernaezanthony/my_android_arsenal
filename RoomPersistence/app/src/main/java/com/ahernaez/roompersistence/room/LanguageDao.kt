@@ -14,8 +14,11 @@ interface LanguageDao {
     @Query("SELECT * FROM Language")
     fun getLanguageList(): LiveData<List<Language>>
 
+    @Update
+    fun updateLanguage(language: Language)
+
     @Transaction
     @Query("DElETE FROM Language WHERE language_id = :languageId")
     fun deleteLanguage(languageId: Int)
-    
+
 }

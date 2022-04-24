@@ -2,7 +2,6 @@ package com.ahernaez.roompersistence.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -14,7 +13,6 @@ import com.ahernaez.roompersistence.databinding.ActivityMainBinding
 import com.ahernaez.roompersistence.model.Language
 import com.ahernaez.roompersistence.utils.SwipeToDeleteCallback
 import com.ahernaez.roompersistence.viewmodel.LanguageViewModel
-import com.google.gson.Gson
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,6 +23,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var languageViewModel: LanguageViewModel
     private var languageList = ArrayList<Language>()
+
+    private var selectedLanguage: Language? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +57,11 @@ class MainActivity : AppCompatActivity() {
         languageViewModel.insertLanguage(this, language)
     }
 
+    private fun editLanguage(language: Language){
+
+        languageViewModel.updateLanguage(this, language)
+    }
+
     private fun deleteLanguage(language: Language){
 
         languageViewModel.deleteLanguage(this, language.languageId)
@@ -80,7 +85,14 @@ class MainActivity : AppCompatActivity() {
     private fun setUpRecyclerView(){
 
         layoutManager = LinearLayoutManager(this)
-        listAdapter = ListAdapter(languageList)
+        listAdapter = ListAdapter(languageList, object : ListAdapter.OnEditBtnClickListener{
+            override fun onEditBtnClicked(language: Language) {
+
+                binding.languageTextInput.setText(language.languageName)
+                binding.addBtn.text = "Update"
+                selectedLanguage = language
+            }
+        })
 
         binding.recyclerView.layoutManager = layoutManager
         binding.recyclerView.adapter = listAdapter
@@ -97,8 +109,18 @@ class MainActivity : AppCompatActivity() {
 
             if (input.isNotEmpty()) {
 
-                val newLang = Language(0, input)
-                addLanguage(newLang)
+                if (selectedLanguage == null) {
+
+                    val newLang = Language(0, input)
+                    addLanguage(newLang)
+                }
+                else{
+
+                    selectedLanguage?.languageName = input
+                    editLanguage(selectedLanguage!!)
+                    binding.addBtn.text = "Add"
+                    selectedLanguage = null
+                }
 
                 binding.languageTextInput.text!!.clear()
             }

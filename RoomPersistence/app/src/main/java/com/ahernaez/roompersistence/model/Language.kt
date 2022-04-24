@@ -12,5 +12,5 @@ data class Language(
     val languageId: Int,
 
     @ColumnInfo(name = "language_name")
-    val languageName: String
+    var languageName: String
 )

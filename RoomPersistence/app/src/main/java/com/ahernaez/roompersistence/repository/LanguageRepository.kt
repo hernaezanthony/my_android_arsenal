@@ -33,6 +33,15 @@ object LanguageRepository {
         }
     }
 
+    fun updateLanguage(context: Context, language: Language){
+
+        appDatabase = initializeDb(context)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            appDatabase!!.languageDao().updateLanguage(language)
+        }
+    }
+
     fun deleteLanguage(context: Context, languageId: Int){
 
         appDatabase = initializeDb(context)
