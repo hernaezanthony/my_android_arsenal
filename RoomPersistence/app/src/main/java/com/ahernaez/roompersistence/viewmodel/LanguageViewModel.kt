@@ -20,4 +20,9 @@ class LanguageViewModel: ViewModel() {
 
         LanguageRepository.insertLanguage(context, language)
     }
+
+    fun deleteLanguage(context: Context, languageId: Int){
+
+        LanguageRepository.deleteLanguage(context, languageId)
+    }
 }

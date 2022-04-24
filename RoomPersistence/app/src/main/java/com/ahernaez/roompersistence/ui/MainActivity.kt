@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         languageViewModel = ViewModelProvider(this).get(LanguageViewModel::class.java)
 
         setUpRecyclerView()
+        setUpInputs()
         addDividerDecoration()
         setUpSwipeToDelete()
         setUpSearch()
@@ -54,6 +55,11 @@ class MainActivity : AppCompatActivity() {
     private fun addLanguage(language: Language){
 
         languageViewModel.insertLanguage(this, language)
+    }
+
+    private fun deleteLanguage(language: Language){
+
+        languageViewModel.deleteLanguage(this, language.languageId)
     }
 
     private fun getLanguageList(){
@@ -83,6 +89,22 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun setUpInputs(){
+
+        binding.addBtn.setOnClickListener {
+
+            val input = binding.languageTextInput.text.toString()
+
+            if (input.isNotEmpty()) {
+
+                val newLang = Language(0, input)
+                addLanguage(newLang)
+
+                binding.languageTextInput.text!!.clear()
+            }
+        }
+    }
+
     private fun addDividerDecoration(){
 
         binding.recyclerView.addItemDecoration(
@@ -99,8 +121,8 @@ class MainActivity : AppCompatActivity() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
 
                 val index = viewHolder.adapterPosition
-                list.removeAt(index)
-                listAdapter.notifyItemRemoved(index)
+
+                deleteLanguage(languageList[index])
             }
         }
 
