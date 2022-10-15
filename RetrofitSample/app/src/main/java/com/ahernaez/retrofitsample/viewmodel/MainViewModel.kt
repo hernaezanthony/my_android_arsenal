@@ -1,5 +1,6 @@
 package com.ahernaez.retrofitsample.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ahernaez.retrofitsample.model.Photo
@@ -11,6 +12,9 @@ import io.reactivex.schedulers.Schedulers
 class MainViewModel : ViewModel(){
 
     private val compositeDisposable =  CompositeDisposable()
+    private val _state = MutableLiveData<MainState>()
+
+    fun getState(): LiveData<MainState> = _state
 
     fun getPhotoList(page: Int, limit: Int): MutableLiveData<List<Photo>>{
 
