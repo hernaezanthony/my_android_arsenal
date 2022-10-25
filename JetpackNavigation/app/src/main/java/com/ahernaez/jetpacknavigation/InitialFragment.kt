@@ -30,7 +30,11 @@ class InitialFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.gotoDestinationFragmentBtn.setOnClickListener {
-            NavHostFragment.findNavController(this).navigate(R.id.action_initialFragment_to_destinationFragment)
+//            NavHostFragment.findNavController(this).navigate(R.id.action_initialFragment_to_destinationFragment)
+
+            val action = InitialFragmentDirections.actionInitialFragmentToDestinationFragment(binding.editText.text.toString())
+            NavHostFragment.findNavController(this).navigate(action)
+
         }
 
     }

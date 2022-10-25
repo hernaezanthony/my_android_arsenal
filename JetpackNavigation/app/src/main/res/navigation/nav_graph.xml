@@ -19,5 +19,9 @@
         android:id="@+id/destinationFragment"
         android:name="com.ahernaez.jetpacknavigation.DestinationFragment"
         android:label="fragment_destination"
-        tools:layout="@layout/fragment_destination" />
+        tools:layout="@layout/fragment_destination" >
+        <argument
+            android:name="testArgument"
+            app:argType="string"/>
+    </fragment>
 </navigation>
