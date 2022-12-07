@@ -16,21 +16,23 @@ class MainViewModel : ViewModel(){
 
     fun getState(): LiveData<MainState> = _state
 
-    fun getPhotoList(page: Int, limit: Int): MutableLiveData<List<Photo>>{
+    fun getPhotoList(page: Int, limit: Int){
 
         val photoList = MutableLiveData<List<Photo>>()
+
+        _state.value = MainState.Loading
 
         compositeDisposable.add(
             MainRepository.getPhotoList(page, limit)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ list->
+                    _state.value = MainState.PhotoList(list)
                     photoList.postValue(list)
                 },{
-                    photoList.postValue(null)
+                    _state.value = MainState.Error(it.message.toString())
                 })
         )
 
-        return photoList
     }
 }

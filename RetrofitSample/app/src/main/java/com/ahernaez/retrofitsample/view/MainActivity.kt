@@ -3,22 +3,27 @@ package com.ahernaez.retrofitsample.view
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import com.ahernaez.retrofitsample.R
 import com.ahernaez.retrofitsample.adapter.PhotosAdapter
 import com.ahernaez.retrofitsample.databinding.ActivityMainBinding
 import com.ahernaez.retrofitsample.model.Photo
 import com.ahernaez.retrofitsample.utils.PaginationScrollListener
+import com.ahernaez.retrofitsample.viewmodel.MainState
 import com.ahernaez.retrofitsample.viewmodel.MainViewModel
+import com.ahernaez.retrofitsample.viewmodel.MainViewModelFactory
 import com.google.gson.Gson
 
 class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
     private lateinit var binding: ActivityMainBinding
-    private lateinit var mainViewModel: MainViewModel
+    private val mainViewModel: MainViewModel by viewModels{
+        MainViewModelFactory(this)
+    }
     private lateinit var photosAdapter: PhotosAdapter
 
     private val photos = arrayListOf<Photo>()
@@ -32,9 +37,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-
         setUpRecyclerView()
+        setUpViewModel()
         getData()
     }
 
@@ -65,19 +69,46 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun setUpViewModel(){
+
+        mainViewModel.getState().observe(this, Observer {
+            renderUiState(it)
+        })
+        
+    }
+
     private fun getData(){
 
-        mainViewModel.getPhotoList(currentPage, 15).observe(this, Observer { list ->
+        mainViewModel.getPhotoList(currentPage, 15)
+    }
 
-            if (!list.isNullOrEmpty()){
+    private fun renderUiState(state: MainState){
 
-                Log.d(TAG, Gson().toJson(list))
+        when(state){
 
-                photos.addAll(list)
-                photosAdapter.notifyDataSetChanged()
+            is MainState.Loading -> {
+                isLoading = true
+                binding.progressBar.visibility = View.VISIBLE
             }
 
-            isLoading = false
-        })
+            is MainState.PhotoList -> {
+
+                if (!state.data.isNullOrEmpty()){
+
+                    Log.d(TAG, Gson().toJson(state.data))
+
+                    photos.addAll(state.data)
+                    photosAdapter.notifyDataSetChanged()
+                }
+                isLoading = false
+                binding.progressBar.visibility = View.GONE
+            }
+
+            is MainState.Error -> {
+                isLoading = false
+                binding.progressBar.visibility = View.GONE
+                Toast.makeText(this@MainActivity, state.errorMsg, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }
